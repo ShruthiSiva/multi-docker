@@ -1,0 +1,53 @@
+version: '3'
+services:
+  nginx:
+    # we want it to be running a 100% of the time.
+    restart: always
+    build: 
+      dockerfile: Dockerfile.dev
+      context: ./nginx
+    ports:
+      # once we start up all the containers, we would be accessing the application from port 3050 in our browser. This would then route the request to the client upstream.
+      - '3050:80'
+  postgres:
+    image: 'postgres:latest'
+    environment:
+      - POSTGRES_PASSWORD=postgres_password
+  redis:
+    image: 'redis:latest'
+  api:
+    build:
+      dockerfile: Dockerfile.dev
+      # context here is the server folder
+      context: ./server
+    volumes:
+      - /app/node_modules
+      # if the application in the running container needs to access any other file other than node_modules, it is going to get redirected to what's inside the ./server folder. 
+      - ./server:/app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - PGUSER=postgres
+      - PGHOST=postgres
+      - PGDATABASE=postgres
+      - PGPASSWORD=postgres_password
+      - PGPORT=5432
+  client:
+    build: 
+      dockerfile: Dockerfile.dev
+      context: ./client
+    volumes:
+     - /app/node_modules
+     - ./client:/app
+    environment:
+      - WDS_SOCKET_PORT=0
+  worker:
+    build: 
+      dockerfile: Dockerfile.dev
+      context: ./worker
+    volumes:
+     - /app/node_modules
+     - ./worker:/app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379

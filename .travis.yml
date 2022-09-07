@@ -1,0 +1,15 @@
+sudo: required
+language: generic 
+services:
+  - docker
+before_install: 
+  - docker build -t shruthisiva95/clientTest -f ./client./Dockerfile.dev ./client
+script:
+  - docker run -e CI=true shruthisiva95/clientTest npm test
+
+# once we're done testing, we want to build different images and push the built images to DockerHub, from where we want AWS EBS to pull the images
+after_success:
+  - docker build -t shruthisiva95/multi-client ./client
+  - docker build -t shruthisiva95/multi-server ./server
+  - docker build -t shruthisiva95/multi-nginx ./nginx
+  - docker build -t shruthisiva95/multi-worker ./worker
