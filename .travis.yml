@@ -13,3 +13,12 @@ after_success:
   - docker build -t shruthisiva95/multi-server ./server
   - docker build -t shruthisiva95/multi-nginx ./nginx
   - docker build -t shruthisiva95/multi-worker ./worker
+
+# Log in to docker cli
+  - echo "$DOCKER_PASSWORD" | docker login  -u "$DOCKER_ID" --password-stdin
+
+# Push the images to dockerhub
+  - docker push shruthisiva95/multi-client
+  - docker push shruthisiva95/multi-server
+  - docker push shruthisiva95/multi-nginx
+  - docker push shruthisiva95/multi-worker
