@@ -3,9 +3,9 @@ language: generic
 services:
   - docker
 before_install: 
-  - docker build -t shruthisiva95/clientTest -f ./client/Dockerfile.dev ./client
+  - docker build -t shruthisiva95/client-test -f ./client/Dockerfile.dev ./client
 script:
-  - docker run -e CI=true shruthisiva95/clientTest npm test
+  - docker run -e CI=true shruthisiva95/client-test npm test
 
 # once we're done testing, we want to build different images and push the built images to DockerHub, from where we want AWS EBS to pull the images
 after_success:
